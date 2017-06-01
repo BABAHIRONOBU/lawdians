@@ -4,5 +4,5 @@ from . import main
 
 
 @main.route('/test')
-def test_index():
+def index():
     return render_template('index.html')

@@ -7,6 +7,8 @@ class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess string'
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    MAIL_APP_KEY = os.environ.get('MAIL_APP_KEY')
+
 
     @staticmethod
     def init_app(app):

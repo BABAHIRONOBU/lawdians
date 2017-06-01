@@ -1,6 +1,7 @@
 from flask import render_template, request, redirect, url_for, flash
 from flask_login import login_user, login_required, logout_user, current_user
 
+from ..email import send_email
 from .. import db
 from ..models import User
 from .forms import LoginForm, RegistrationForm
@@ -52,6 +53,7 @@ def register():
         db.session.commit()
         token = user.generate_confirmation_token()
         # TODO: send email to user
+        send_email('auth/email/confirm_title', 'auth/email/confirm', user.email, user.username, user=user, token=token)
         flash('A confirmation email has been sent to you by email.')
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', form=form)
@@ -62,7 +64,7 @@ def register():
 def confirm(token):
     if current_user.confirmed:
         return redirect(url_for('main.index'))
-    if current_user.confirmed(token):
+    if current_user.confirm(token):
         flash('You have confirmed your account. Thanks')
     else:
         flash('The confirmation link is invalid or has expired.')
@@ -74,5 +76,7 @@ def confirm(token):
 def resend_confirmation():
     token = current_user.generate_confirmation_token()
     # TODO: send email
+    send_email('auth/email/confirm_title', 'auth/email/confirm', current_user.email, current_user.username,
+               user=current_user, token=token)
     flash('A new confirmation email has been sent to you by email.')
     return redirect(url_for('main.index'))
